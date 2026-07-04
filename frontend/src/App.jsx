@@ -8,6 +8,7 @@ import bannerRight from './assets/banner_right.jpg'
 
 function App() {
   const [view, setView] = useState('inputs') // 'inputs' or 'results'
+  const [optimizationData, setOptimizationData] = useState(null)
 
   return (
     <div className="app-layout">
@@ -21,7 +22,10 @@ function App() {
               </a>
             </aside>
             <div className="main-content-container">
-              <NewBatchPage onOptimize={() => setView('results')} />
+              <NewBatchPage onOptimize={(data) => {
+                setOptimizationData(data)
+                setView('results')
+              }} />
             </div>
             <aside className="banner-sidebar right-sidebar">
               <a href="https://cravorasolutions.com/" target="_blank" rel="noopener noreferrer">
@@ -30,7 +34,7 @@ function App() {
             </aside>
           </div>
         ) : (
-          <ResultsPage onBack={() => setView('inputs')} />
+          <ResultsPage data={optimizationData} onBack={() => setView('inputs')} />
         )}
       </div>
     </div>

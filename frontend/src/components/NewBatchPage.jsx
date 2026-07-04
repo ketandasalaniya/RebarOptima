@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import './NewBatchPage.css'
+import { solve1DCSP } from '../utils/optimizer'
 import { 
   Settings, 
   Upload, 
@@ -12,14 +13,11 @@ import {
 } from 'lucide-react'
 
 const initialStock = [
-  { id: 1, length: '12000', quantity: '1000' },
+  { id: 1, diameter: '12', length: '12000', quantity: '1000' },
 ]
 
 const initialParts = [
-  { id: 1, diameter: '12', length: '2500', quantity: '32', label: '' },
-  { id: 2, diameter: '12', length: '3525', quantity: '25', label: '' },
-  { id: 3, diameter: '16', length: '5200', quantity: '45', label: '' },
-  { id: 4, diameter: '16', length: '7800', quantity: '35', label: '' },
+  { id: 1, diameter: '12', length: '', quantity: '', label: '' },
 ]
 
 // ponytail: shared hook for add-row-on-Tab logic across both tables
@@ -58,7 +56,11 @@ function useTableRows(initial, defaults) {
 }
 
 export default function NewBatchPage({ onOptimize }) {
-  const stock = useTableRows(initialStock, () => ({ length: '12000', quantity: '' }))
+  const stock = useTableRows(initialStock, (prev) => ({
+    diameter: prev.length ? prev[prev.length - 1].diameter : '12',
+    length: '12000',
+    quantity: '',
+  }))
   const parts = useTableRows(initialParts, (prev) => ({
     diameter: prev.length ? prev[prev.length - 1].diameter : '12',
     length: '',
@@ -128,6 +130,7 @@ export default function NewBatchPage({ onOptimize }) {
             <thead>
               <tr>
                 <th className="col-num">#</th>
+                <th>Diameter (mm)</th>
                 <th>Length (mm)</th>
                 <th>Quantity</th>
                 <th className="col-actions">Actions</th>
@@ -138,12 +141,27 @@ export default function NewBatchPage({ onOptimize }) {
                 <tr key={row.id}>
                   <td className="col-num">{i + 1}</td>
                   <td>
+                    <select
+                      className="form-select"
+                      value={row.diameter}
+                      onChange={(e) => stock.updateRow(row.id, 'diameter', e.target.value)}
+                      ref={i === stock.rows.length - 1 ? stock.firstFieldRef : undefined}
+                    >
+                      <option>8</option>
+                      <option>10</option>
+                      <option>12</option>
+                      <option>16</option>
+                      <option>20</option>
+                      <option>25</option>
+                      <option>32</option>
+                    </select>
+                  </td>
+                  <td>
                     <input
                       className="form-input"
                       type="number"
                       value={row.length}
                       onChange={(e) => stock.updateRow(row.id, 'length', e.target.value)}
-                      ref={i === stock.rows.length - 1 ? stock.firstFieldRef : undefined}
                     />
                   </td>
                   <td>
@@ -333,7 +351,15 @@ export default function NewBatchPage({ onOptimize }) {
 
       {/* Optimize Button */}
       <div className="optimize-section">
-        <button className="btn-optimize" onClick={onOptimize}>RUN OPTIMIZATION</button>
+        <button 
+          className="btn-optimize" 
+          onClick={() => {
+            const data = solve1DCSP(stock.rows, parts.rows, { kerf, trimMargin, minRemnant });
+            onOptimize(data);
+          }}
+        >
+          RUN OPTIMIZATION
+        </button>
       </div>
 
       {/* Premium Educational Landing Section */}

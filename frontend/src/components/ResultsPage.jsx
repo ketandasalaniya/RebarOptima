@@ -113,13 +113,40 @@ const mockLayouts = [
   },
 ]
 
-export default function ResultsPage({ onBack }) {
+export default function ResultsPage({ data, onBack }) {
+  const layouts = data ? data.layouts : mockLayouts;
+  const summary = data ? data.summary : {
+    totalPartsLength: 554480,
+    totalUsedStockLength: 564000,
+    totalCutsCount: 296,
+    totalRemnant: 6870,
+    avgUtilization: 98.312
+  };
+
+  const totalPartsQty = layouts.reduce((sum, l) => sum + (l.parts.length * l.repetition), 0);
+  const totalBarsUsed = layouts.reduce((sum, l) => sum + l.repetition, 0);
+
+  // Group layouts to show required stocks
+  const requiredStocksMap = {};
+  layouts.forEach(l => {
+    const key = `${l.diameter}-${l.stockLength}`;
+    if (!requiredStocksMap[key]) {
+      requiredStocksMap[key] = {
+        diameter: l.diameter || '12',
+        length: l.stockLength,
+        quantity: 0
+      };
+    }
+    requiredStocksMap[key].quantity += l.repetition;
+  });
+  const requiredStocks = Object.values(requiredStocksMap);
+
   const exportToExcel = () => {
-    let csvContent = "Layout,Repetition,Stock Length (mm),Cuts,Waste,Utilization (%),Cut Details\n";
+    let csvContent = "Layout,Repetition,Diameter (mm),Stock Length (mm),Cuts,Waste (mm),Utilization (%),Cut Details\n";
     
-    mockLayouts.forEach(layout => {
-      const partsStr = layout.parts.map(p => `${p.length}mm (x${p.qty})`).join(" | ");
-      const row = `${layout.id},${layout.repetition},${layout.stockLength},${layout.cutsCount},"${layout.waste}",${layout.utilization}%,"${partsStr}"`;
+    layouts.forEach(layout => {
+      const partsStr = layout.parts.map(p => `${p.length}mm`).join(" | ");
+      const row = `${layout.id},${layout.repetition},${layout.diameter || '12'},${layout.stockLength},${layout.cutsCount},${layout.waste},${layout.utilization.toFixed(2)}%,"${partsStr}"`;
       csvContent += row + "\n";
     });
     
@@ -179,15 +206,15 @@ export default function ResultsPage({ onBack }) {
         </span>
       </div>
 
-      {/* Metadata Row (Removed Project and Job ID) */}
+      {/* Metadata Row */}
       <div className="results-metadata-grid">
         <div>
-          <span className="meta-lbl">Stock Length</span>
-          <span className="meta-v">12,000 mm</span>
+          <span className="meta-lbl">Date</span>
+          <span className="meta-v">{new Date().toLocaleString()}</span>
         </div>
         <div>
-          <span className="meta-lbl">Date</span>
-          <span className="meta-v">24 May 2025, 11:42 AM</span>
+          <span className="meta-lbl">Total Parts Length</span>
+          <span className="meta-v">{summary.totalPartsLength.toLocaleString()} mm</span>
         </div>
         <div>
           <span className="meta-lbl">Units</span>
@@ -200,7 +227,7 @@ export default function ResultsPage({ onBack }) {
         <div className="card summary-icon-card">
           <div className="card-info">
             <span className="stat-label">Total Parts (Quantity)</span>
-            <span className="stat-value">554,480 <span className="stat-sub">(296)</span></span>
+            <span className="stat-value">{summary.totalPartsLength.toLocaleString()} <span className="stat-sub">({totalPartsQty})</span></span>
           </div>
           <div className="card-icon">
             <Package size={20} color="var(--accent)" />
@@ -210,8 +237,8 @@ export default function ResultsPage({ onBack }) {
         <div className="card summary-icon-card">
           <div className="card-info">
             <span className="stat-label">Used Stock Length</span>
-            <span className="stat-value">564,000 <span className="stat-unit">mm</span></span>
-            <span className="stat-percentage">(98.312%)</span>
+            <span className="stat-value">{summary.totalUsedStockLength.toLocaleString()} <span className="stat-unit">mm</span></span>
+            <span className="stat-percentage">({summary.avgUtilization.toFixed(3)}%)</span>
           </div>
           <div className="card-icon">
             <TrendingUp size={20} color="var(--accent)" />
@@ -221,7 +248,7 @@ export default function ResultsPage({ onBack }) {
         <div className="card summary-icon-card">
           <div className="card-info">
             <span className="stat-label">Total Cutting Layouts</span>
-            <span className="stat-value">7</span>
+            <span className="stat-value">{layouts.length}</span>
           </div>
           <div className="card-icon">
             <ClipboardList size={20} color="var(--accent)" />
@@ -231,7 +258,7 @@ export default function ResultsPage({ onBack }) {
         <div className="card summary-icon-card">
           <div className="card-info">
             <span className="stat-label">Total Cuts</span>
-            <span className="stat-value">296</span>
+            <span className="stat-value">{summary.totalCutsCount}</span>
           </div>
           <div className="card-icon">
             <Scissors size={20} color="var(--accent)" />
@@ -247,21 +274,25 @@ export default function ResultsPage({ onBack }) {
           <table className="summary-table">
             <thead>
               <tr>
+                <th>Diameter (mm)</th>
                 <th>Stock Length (mm)</th>
                 <th>Quantity (Bars)</th>
                 <th>Total Length (mm)</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>12,000</td>
-                <td>47</td>
-                <td>564,000</td>
-              </tr>
+              {requiredStocks.map((s, idx) => (
+                <tr key={idx}>
+                  <td>{s.diameter}</td>
+                  <td>{s.length.toLocaleString()}</td>
+                  <td>{s.quantity}</td>
+                  <td>{(s.length * s.quantity).toLocaleString()}</td>
+                </tr>
+              ))}
               <tr className="total-row">
-                <td>TOTAL</td>
-                <td>47</td>
-                <td>564,000</td>
+                <td colSpan={2}>TOTAL</td>
+                <td>{totalBarsUsed}</td>
+                <td>{summary.totalUsedStockLength.toLocaleString()}</td>
               </tr>
             </tbody>
           </table>
@@ -274,30 +305,30 @@ export default function ResultsPage({ onBack }) {
             <tbody>
               <tr>
                 <td>Total parts length (Quantity)</td>
-                <td className="text-right font-bold">554,480 mm (296)</td>
+                <td className="text-right font-bold">{summary.totalPartsLength.toLocaleString()} mm ({totalPartsQty})</td>
               </tr>
               <tr>
                 <td>Used stocks total length (Yield)</td>
-                <td className="text-right font-bold text-green">564,000 mm (98.312%)</td>
+                <td className="text-right font-bold text-green">{summary.totalUsedStockLength.toLocaleString()} mm ({summary.avgUtilization.toFixed(3)}%)</td>
               </tr>
               <tr>
                 <td>Total cutting layouts</td>
-                <td className="text-right font-bold">7</td>
+                <td className="text-right font-bold">{layouts.length}</td>
               </tr>
               <tr>
                 <td>Total number of cuts</td>
-                <td className="text-right font-bold">296</td>
+                <td className="text-right font-bold">{summary.totalCutsCount}</td>
               </tr>
               <tr>
                 <td>Total material remnant</td>
-                <td className="text-right font-bold text-orange">6,870 mm (1.688%)</td>
+                <td className="text-right font-bold text-orange">{summary.totalRemnant.toLocaleString()} mm ({(100 - summary.avgUtilization).toFixed(3)}%)</td>
               </tr>
               <tr className="progress-row">
                 <td>Average utilization</td>
                 <td className="text-right">
                   <div className="util-progress-container">
-                    <div className="util-progress-bar" style={{ width: '98.31%' }} />
-                    <span className="util-progress-text">98.31%</span>
+                    <div className="util-progress-bar" style={{ width: `${summary.avgUtilization}%` }} />
+                    <span className="util-progress-text">{summary.avgUtilization.toFixed(2)}%</span>
                   </div>
                 </td>
               </tr>
@@ -310,7 +341,7 @@ export default function ResultsPage({ onBack }) {
       <div className="layouts-section">
         <h2 className="layouts-heading-title">Cutting Layouts</h2>
 
-        {mockLayouts.map((layout) => (
+        {layouts.map((layout) => (
           <div key={layout.id} className="card layout-card-new">
             <div className="layout-grid-new">
               
@@ -326,7 +357,7 @@ export default function ResultsPage({ onBack }) {
                   <span className="layout-stock-label">Diameter</span>
                 </div>
                 <div className="layout-stock-meta">
-                  <span className="layout-stock-val">12,000 mm</span>
+                  <span className="layout-stock-val">{layout.stockLength.toLocaleString()} mm</span>
                   <span className="layout-stock-label">Stock Length</span>
                 </div>
               </div>
@@ -335,17 +366,22 @@ export default function ResultsPage({ onBack }) {
               <div className="layout-middle-panel">
                 <div className="layout-middle-header">
                   <div className="colors-indicator-legend">
-                    <span className="legend-dot pink" /> 4,500
-                    <span className="legend-dot yellow" /> 1,200
-                    <span className="legend-dot green" /> 950
-                    <span className="legend-dot blue" /> 760
+                    {Array.from(new Set(layout.parts.map(p => p.length))).map((len, idx) => {
+                      const part = layout.parts.find(p => p.length === len);
+                      return (
+                        <span key={idx} className="legend-item" style={{ marginRight: '8px', display: 'inline-flex', alignItems: 'center' }}>
+                          <span className="legend-dot" style={{ backgroundColor: part.color, width: '8px', height: '8px', borderRadius: '50%', display: 'inline-block', marginRight: '4px' }} />
+                          {len.toLocaleString()}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
 
                 <div className="visual-bar-wrapper">
                   <div className="visual-bar-ruler">
                     {layout.parts.map((p, idx) => {
-                      const percent = ((p.length * p.qty) / layout.stockLength) * 100;
+                      const percent = (p.length / layout.stockLength) * 100;
                       return (
                         <div 
                           key={idx}
@@ -359,15 +395,23 @@ export default function ResultsPage({ onBack }) {
                         </div>
                       );
                     })}
-                    {/* Waste/Remnant segment */}
-                    {layout.id === 'G' && (
-                      <div 
-                        className="bar-segment remnant-segment"
-                        style={{ width: `${(6870 / 12000) * 100}%` }}
-                      >
-                        Waste / Remnant<br />6,870 mm
-                      </div>
-                    )}
+                    {/* Waste / Remnant Segment */}
+                    {(() => {
+                      const partsLen = layout.parts.reduce((sum, p) => sum + p.length, 0);
+                      const remnantLen = layout.stockLength - partsLen;
+                      const wastePercent = (remnantLen / layout.stockLength) * 100;
+                      if (wastePercent > 0.1) {
+                        return (
+                          <div 
+                            className="bar-segment remnant-segment"
+                            style={{ width: `${wastePercent}%` }}
+                          >
+                            Waste / Remnant<br />{remnantLen.toLocaleString()} mm
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
                 </div>
               </div>
@@ -381,12 +425,12 @@ export default function ResultsPage({ onBack }) {
 
                 <div className="right-stat-box">
                   <span className="right-stat-lbl">Waste</span>
-                  <span className="right-stat-val text-dark">{layout.waste}</span>
+                  <span className="right-stat-val text-dark">{layout.waste.toLocaleString()} mm</span>
                 </div>
 
                 <div className="right-stat-box">
                   <span className="right-stat-lbl">Utilization</span>
-                  <span className="right-stat-val text-green">{layout.utilization}%</span>
+                  <span className="right-stat-val text-green">{layout.utilization.toFixed(2)}%</span>
                 </div>
 
               </div>
@@ -404,7 +448,7 @@ export default function ResultsPage({ onBack }) {
           </div>
           <div>
             <div className="bottom-lbl">OVERALL UTILIZATION</div>
-            <div className="bottom-v text-green">98.31%</div>
+            <div className="bottom-v text-green">{summary.avgUtilization.toFixed(2)}%</div>
           </div>
         </div>
 
@@ -414,7 +458,7 @@ export default function ResultsPage({ onBack }) {
           </div>
           <div>
             <div className="bottom-lbl">TOTAL WASTE</div>
-            <div className="bottom-v text-orange">6,870 mm <span className="bottom-v-sub">(1.688%)</span></div>
+            <div className="bottom-v text-orange">{summary.totalRemnant.toLocaleString()} mm <span className="bottom-v-sub">({(100 - summary.avgUtilization).toFixed(3)}%)</span></div>
           </div>
         </div>
 
@@ -424,7 +468,7 @@ export default function ResultsPage({ onBack }) {
           </div>
           <div>
             <div className="bottom-lbl">TOTAL BARS USED</div>
-            <div className="bottom-v">47</div>
+            <div className="bottom-v">{totalBarsUsed}</div>
           </div>
         </div>
 
@@ -434,7 +478,7 @@ export default function ResultsPage({ onBack }) {
           </div>
           <div>
             <div className="bottom-lbl">TOTAL CUTS</div>
-            <div className="bottom-v">296</div>
+            <div className="bottom-v">{summary.totalCutsCount}</div>
           </div>
         </div>
       </div>
@@ -445,5 +489,5 @@ export default function ResultsPage({ onBack }) {
         <span>Generated by RebarOptima Cut Optimizer</span>
       </div>
     </div>
-  )
+  );
 }

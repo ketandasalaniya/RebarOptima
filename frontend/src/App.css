@@ -32,19 +32,16 @@
   flex-direction: column;
   position: sticky;
   top: 76px; /* Sticky so banners remain visible while page scrolls */
-  height: calc(100vh - 100px);
 }
 
 .banner-sidebar a {
   display: block;
   width: 100%;
-  height: 100%;
 }
 
 .banner-sidebar img {
   width: 100%;
-  height: 100%;
-  object-fit: fill; /* Forces identical aspect rendering */
+  height: auto;
   display: block;
 }
 
