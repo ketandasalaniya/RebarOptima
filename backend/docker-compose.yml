@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: rebar_optima
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: supersecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:supersecretpassword@postgres:5432/rebar_optima?schema=public
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_ACCESS_SECRET=change-this-to-a-very-secure-secret-key
+      - JWT_REFRESH_SECRET=change-this-to-another-very-secure-secret-key
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  pgdata:
