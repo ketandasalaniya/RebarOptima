@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import './Navbar.css'
 import logo from '../assets/logo.png'
 
+
+
+// Hello Test 
+
 export default function Navbar() {
   const [shrunk, setShrunk] = useState(false)
 
@@ -19,10 +23,10 @@ export default function Navbar() {
 
   return (
     <header className={`navbar ${shrunk ? 'shrunk' : ''}`}>
-      <img 
-        className={`navbar-logo-img ${shrunk ? 'logo-shrunk' : ''}`} 
-        src={logo} 
-        alt="RebarOptima Logo" 
+      <img
+        className={`navbar-logo-img ${shrunk ? 'logo-shrunk' : ''}`}
+        src={logo}
+        alt="RebarOptima Logo"
       />
     </header>
   )
