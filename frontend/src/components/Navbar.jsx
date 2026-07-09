@@ -23,11 +23,13 @@ export default function Navbar() {
 
   return (
     <header className={`navbar ${shrunk ? 'shrunk' : ''}`}>
-      <img
-        className={`navbar-logo-img ${shrunk ? 'logo-shrunk' : ''}`}
-        src={logo}
-        alt="RebarOptima Logo"
-      />
+      <a href="/">
+        <img
+          className={`navbar-logo-img ${shrunk ? 'logo-shrunk' : ''}`}
+          src={logo}
+          alt="RebarOptima Logo"
+        />
+      </a>
     </header>
   )
 }
