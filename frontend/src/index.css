@@ -38,10 +38,39 @@
   --danger: #e85a3a;
   --input-border: #ccd0db;
   --input-bg: #ffffff;
+  
+  /* Auth Page Left Overlay */
+  --auth-gradient: linear-gradient(to bottom, rgba(244, 243, 250, 0.75), rgba(244, 243, 250, 0.95));
 
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   color: var(--text-primary);
+}
+
+[data-theme="dark"] {
+  --sidebar-bg: #151125;
+  --sidebar-text: #8d86b8;
+  --sidebar-text-active: #ffffff;
+  --sidebar-active-border: #7016d2;
+
+  --accent: #7016d2;
+  --accent-hover: #8b30f5;
+
+  --main-bg: #110e16;
+  --card-bg: #151125;
+  --card-border: #282142;
+
+  --text-primary: #ffffff;
+  --text-secondary: #a19db5;
+  --text-label: #8d86b8;
+
+  --navbar-bg: #151125;
+  --navbar-border: #282142;
+
+  --input-border: #282142;
+  --input-bg: #1d1833;
+  
+  --auth-gradient: linear-gradient(to bottom, rgba(20, 18, 30, 0.75), rgba(15, 12, 23, 0.95));
 }
 
 body {

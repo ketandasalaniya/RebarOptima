@@ -4,61 +4,30 @@
   min-height: 100vh;
 }
 
-.page-content {
+/* SideNavbar Workspace Layout */
+.app-workspace {
+  display: flex;
+  flex-direction: row;
   flex: 1;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.main-viewport {
+  flex: 1;
+  background: var(--main-bg);
   padding: 24px;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-.optimizer-workspace {
-  display: flex;
-  gap: 24px;
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.banner-sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--card-bg);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  position: sticky;
-  top: 76px;
-  /* Sticky so banners remain visible while page scrolls */
-}
-
-.banner-sidebar a {
-  display: block;
-  width: 100%;
-}
-
-.banner-sidebar img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.main-content-container {
-  flex: 1;
-  max-width: 860px;
-  min-width: 320px;
-}
-
-/* Device Friendly: Hide banners on tablet/mobile views */
-@media (max-width: 1200px) {
-  .banner-sidebar {
-    display: none !important;
+@media (max-width: 900px) {
+  .app-workspace {
+    flex-direction: column;
   }
 
-  .optimizer-workspace {
-    gap: 0;
+  .main-viewport {
+    padding: 16px;
+    min-height: calc(100vh - 64px);
   }
 }

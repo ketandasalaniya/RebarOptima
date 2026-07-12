@@ -1,35 +1,25 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { CompaniesModule } from './modules/companies/companies.module';
-import { ProjectsModule } from './modules/projects/projects.module';
-import { InventoryModule } from './modules/inventory/inventory.module';
-import { StockModule } from './modules/stock/stock.module';
-import { OptimizerModule } from './modules/optimizer/optimizer.module';
-import { ReportsModule } from './modules/reports/reports.module';
-import { SettingsModule } from './modules/settings/settings.module';
-import { NotificationsModule } from './modules/notifications/notifications.module';
-import { AuditModule } from './modules/audit/audit.module';
-import { SharedModule } from './modules/shared/shared.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { CompaniesModule } from './companies/companies.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { BatchesModule } from './batches/batches.module';
 
 @Module({
   imports: [
+    MongooseModule.forRoot(process.env.DATABASE_URL || 'mongodb://localhost:27017/rebar_optima'),
     AuthModule,
     UsersModule,
     CompaniesModule,
-    ProjectsModule,
     InventoryModule,
-    StockModule,
-    OptimizerModule,
-    ReportsModule,
-    SettingsModule,
-    NotificationsModule,
-    AuditModule,
-    SharedModule,
+    BatchesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
+
+

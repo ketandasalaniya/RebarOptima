@@ -2,14 +2,15 @@
 export function solve1DCSP(stockRows, partsRows, options = {}) {
   const kerf = parseFloat(options.kerf || 0) || 0;
   const trimMargin = parseFloat(options.trimMargin || 0) || 0;
-  const minRemnant = parseFloat(options.minRemnant || 0) || 0;
 
-  // Filter valid rows
+  // Filter valid rows and keep dbId / isRemnant
   const stocks = stockRows
     .map(s => ({
       diameter: s.diameter,
       length: parseFloat(s.length),
-      quantity: parseInt(s.quantity) || 0
+      quantity: parseInt(s.quantity) || 0,
+      dbId: s.dbId,
+      isRemnant: !!s.isRemnant
     }))
     .filter(s => s.length > 0 && s.quantity > 0);
 
@@ -85,13 +86,15 @@ export function solve1DCSP(stockRows, partsRows, options = {}) {
     });
     flatParts.sort((a, b) => b.length - a.length);
 
-    // Expand available stocks
+    // Expand available stocks and preserve their dbId and isRemnant status
     const availableStocks = [];
     diaStocks.forEach(s => {
       for (let i = 0; i < s.quantity; i++) {
-        availableStocks.push({ length: s.length });
+        availableStocks.push({ length: s.length, dbId: s.dbId, isRemnant: s.isRemnant });
       }
     });
+    
+    // Sort available stocks by length descending, but we will scan remnants first inside the loop!
     availableStocks.sort((a, b) => b.length - a.length);
 
     const usedBars = [];
@@ -109,20 +112,34 @@ export function solve1DCSP(stockRows, partsRows, options = {}) {
       if (!targetBar) {
         // Start a new bar from available stocks
         let stockIndex = -1;
+        
+        // ponytail: prioritize remnants first as requested: "for Remanant use first in next Batch of Optimisation"
         for (let i = 0; i < availableStocks.length; i++) {
-          if (availableStocks[i].length >= part.length + trimMargin * 2) {
+          if (availableStocks[i].isRemnant && availableStocks[i].length >= part.length + trimMargin * 2) {
             stockIndex = i;
             break;
           }
         }
+        
+        // If no remnant was found that fits, check the standard stock bars
+        if (stockIndex === -1) {
+          for (let i = 0; i < availableStocks.length; i++) {
+            if (!availableStocks[i].isRemnant && availableStocks[i].length >= part.length + trimMargin * 2) {
+              stockIndex = i;
+              break;
+            }
+          }
+        }
 
         if (stockIndex !== -1) {
-          const barLength = availableStocks[stockIndex].length;
+          const selectedStock = availableStocks[stockIndex];
           availableStocks.splice(stockIndex, 1);
           targetBar = {
-            stockLength: barLength,
+            stockLength: selectedStock.length,
             diameter: dia,
             isVirtual: false,
+            dbId: selectedStock.dbId,
+            isRemnant: selectedStock.isRemnant,
             parts: []
           };
           usedBars.push(targetBar);
@@ -155,13 +172,15 @@ export function solve1DCSP(stockRows, partsRows, options = {}) {
       bar.utilization = (cutsLength / bar.stockLength) * 100;
     });
 
-    // Group identical layouts
+    // Group identical layouts, keeping tracking of dbId and isRemnant
     const grouped = [];
     usedBars.forEach(bar => {
       const match = grouped.find(g => 
         g.diameter === bar.diameter &&
         g.stockLength === bar.stockLength &&
         g.isVirtual === bar.isVirtual &&
+        g.dbId === bar.dbId &&
+        g.isRemnant === bar.isRemnant &&
         g.parts.length === bar.parts.length &&
         g.parts.every((p, idx) => p.length === bar.parts[idx].length)
       );
@@ -174,6 +193,8 @@ export function solve1DCSP(stockRows, partsRows, options = {}) {
           diameter: bar.diameter,
           stockLength: bar.stockLength,
           isVirtual: bar.isVirtual,
+          dbId: bar.dbId,
+          isRemnant: bar.isRemnant,
           parts: bar.parts.map(p => ({ 
             length: p.length, 
             color: bar.isVirtual ? '#ffb3b3' : p.color, // Muted red if virtual

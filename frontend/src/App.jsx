@@ -1,25 +1,44 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import Navbar from './components/Navbar'
-import NewBatchPage from './components/NewBatchPage'
-import ResultsPage from './components/ResultsPage'
-import bannerLeft from './assets/banner_left.jpg'
-import bannerRight from './assets/banner_right.jpg'
+import SideNavbar from './components/SideNavbar/SideNavbar'
+import NewBatchPage from './pages/NewBatchPage/NewBatchPage'
+import ResultsPage from './pages/ResultsPage/ResultsPage'
+import SignInPage from './pages/SignInPage/SignInPage'
+import SignUpPage from './pages/SignUpPage/SignUpPage'
+import OverviewPage from './pages/OverviewPage/OverviewPage'
+import InventoryPage from './pages/InventoryPage/InventoryPage'
+import BatchHistoryPage from './pages/BatchHistoryPage/BatchHistoryPage'
+import ScrollToTop from './components/ScrollToTop/ScrollToTop'
 
 function App() {
-  const [view, setView] = useState('inputs') // 'inputs' or 'results'
+  const [view, setView] = useState('signin') // 'signin', 'signup', 'overview', 'inventory', 'inputs', 'results', 'history'
   const [optimizationData, setOptimizationData] = useState(null)
+  const [_user, setUser] = useState(null)
 
-  // ponytail: Using native popstate history navigation to handle back button without router dependency.
-  // Ceiling: App doesn't support complex URLs/sub-routes. Upgrade path: Use react-router-dom if routing needs grow.
+  // ponytail: Restore session from localStorage on mount.
   useEffect(() => {
-    window.history.replaceState({ view: 'inputs' }, '')
+    const token = localStorage.getItem('accessToken')
+    const storedUser = localStorage.getItem('user')
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser))
+      setView('overview')
+      window.history.replaceState({ view: 'overview' }, '')
+    } else {
+      window.history.replaceState({ view: 'signin' }, '')
+    }
 
     const handlePopState = (event) => {
-      if (event.state && event.state.view === 'results') {
-        setView('results')
+      const tokenExists = localStorage.getItem('accessToken')
+      if (event.state && event.state.view) {
+        // Protected routes check
+        if (!tokenExists && event.state.view !== 'signin' && event.state.view !== 'signup') {
+          setView('signin')
+          window.history.replaceState({ view: 'signin' }, '')
+        } else {
+          setView(event.state.view)
+        }
       } else {
-        setView('inputs')
+        setView(tokenExists ? 'overview' : 'signin')
       }
     }
     window.addEventListener('popstate', handlePopState)
@@ -30,37 +49,84 @@ function App() {
     window.scrollTo(0, 0)
   }, [view])
 
+  const handleSignInSuccess = (authData) => {
+    localStorage.setItem('accessToken', authData.accessToken)
+    localStorage.setItem('user', JSON.stringify(authData.user))
+    setUser(authData.user)
+    setView('overview')
+    window.history.pushState({ view: 'overview' }, '')
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('user')
+    setUser(null)
+    setView('signin')
+    window.history.pushState({ view: 'signin' }, '')
+  }
+
+  const handleNavigate = (newView) => {
+    setView(newView)
+    window.history.pushState({ view: newView }, '')
+  }
+
   return (
     <div className="app-layout">
-      <Navbar />
-      <div className="page-content">
-        {view === 'inputs' ? (
-          <div className="optimizer-workspace">
-            <aside className="banner-sidebar left-sidebar">
-              <a href="https://cravorasolutions.com/" target="_blank" rel="noopener noreferrer">
-                <img src={bannerLeft} alt="Cravora Solutions Left" />
-              </a>
-            </aside>
-            <div className="main-content-container">
+      {view === 'signin' ? (
+        <SignInPage 
+          onSignIn={handleSignInSuccess} 
+          onNavigateToSignUp={() => {
+            setView('signup')
+            window.history.pushState({ view: 'signup' }, '')
+          }}
+        />
+      ) : view === 'signup' ? (
+        <SignUpPage 
+          onSignUp={handleSignInSuccess}
+          onNavigateToSignIn={() => {
+            setView('signin')
+            window.history.pushState({ view: 'signin' }, '')
+          }}
+        />
+      ) : (
+        <div className="app-workspace">
+          <SideNavbar currentView={view} onViewChange={handleNavigate} onLogout={handleLogout} />
+          <div className="main-viewport">
+            {view === 'overview' && (
+              <OverviewPage onNavigate={handleNavigate} />
+            )}
+            {view === 'inventory' && (
+              <InventoryPage />
+            )}
+            {view === 'inputs' && (
               <NewBatchPage onOptimize={(data) => {
                 setOptimizationData(data)
                 setView('results')
                 window.history.pushState({ view: 'results' }, '')
               }} />
-            </div>
-            <aside className="banner-sidebar right-sidebar">
-              <a href="https://cravorasolutions.com/" target="_blank" rel="noopener noreferrer">
-                <img src={bannerRight} alt="Cravora Solutions Right" />
-              </a>
-            </aside>
+            )}
+            {view === 'results' && (
+              <ResultsPage 
+                data={optimizationData} 
+                onBack={() => {
+                  setView('inputs')
+                  window.history.pushState({ view: 'inputs' }, '')
+                }}
+                onSaveSuccess={() => {
+                  setView('history')
+                  window.history.pushState({ view: 'history' }, '')
+                }}
+              />
+            )}
+            {view === 'history' && (
+              <BatchHistoryPage />
+            )}
           </div>
-        ) : (
-          <ResultsPage data={optimizationData} onBack={() => window.history.back()} />
-        )}
-      </div>
+        </div>
+      )}
+      <ScrollToTop />
     </div>
   )
 }
 
 export default App
-
