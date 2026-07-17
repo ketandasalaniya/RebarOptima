@@ -3,24 +3,12 @@ import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
   async signup(
-    @Body() dto: {
-      email: string;
-      password?: string;
-      firstName: string;
-      lastName: string;
-      role: string;
-      companyName: string;
-      projectName: string;
-      location: string;
-      mobileNumber: string;
-      promoConsent?: boolean;
-      newsletterConsent?: boolean;
-    },
+    @Body() dto: { email: string; password?: string; fullName: string; companyName: string },
   ) {
     return this.authService.signup(dto);
   }
