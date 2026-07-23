@@ -573,3 +573,95 @@
   display: none !important;
 }
 
+/* Responsive Media Queries */
+@media (max-width: 900px) {
+  .history-page {
+    padding: 16px 8px;
+  }
+
+  .batch-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .batch-meta-right {
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .layout-grid-new {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .layout-left-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--card-border);
+    padding-right: 0;
+    padding-bottom: 12px;
+  }
+
+  .layout-right-panel {
+    border-left: none;
+    border-top: 1px solid var(--card-border);
+    padding-left: 0;
+    padding-top: 12px;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 640px) {
+  .batch-metrics-subgrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .btn-print-batch,
+  .btn-edit-batch,
+  .btn-delete-batch {
+    padding: 8px 10px;
+    font-size: 11px;
+    margin-right: 4px;
+  }
+
+  .batch-rename-form {
+    width: 100%;
+  }
+
+  .batch-rename-input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .history-page {
+    padding: 8px 4px;
+  }
+
+  .batch-card-body {
+    padding: 0 10px 16px 10px;
+  }
+
+  .batch-metrics-subgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .batch-meta-right {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-print-batch,
+  .btn-edit-batch,
+  .btn-delete-batch {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 4px;
+    justify-content: center;
+  }
+}
+

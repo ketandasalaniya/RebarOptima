@@ -733,6 +733,44 @@
 
 @media (max-width: 1024px) {
   .recent-batches-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .actions-header-row {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .add-row-btn,
+  .import-row-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .recent-batches-card {
+    padding: 16px 12px !important;
+  }
+
+  .batch-grid-item {
+    padding: 14px 10px;
+  }
+
+  .batch-item-name {
+    max-width: 120px;
+  }
+
+  .btn-optimize {
+    padding: 12px 20px;
+    font-size: 13px;
   }
 }

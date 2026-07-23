@@ -374,3 +374,54 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .superadmin-nav {
+    padding: 10px 12px;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .superadmin-content {
+    padding: 12px 8px;
+  }
+
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+
+  .superadmin-search {
+    width: 100%;
+  }
+
+  .superadmin-search:focus {
+    width: 100%;
+  }
+
+  .list-panel,
+  .control-panel {
+    padding: 16px 12px;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .superadmin-content {
+    padding: 8px 4px;
+  }
+
+  .superadmin-metrics-row {
+    grid-template-columns: 1fr;
+  }
+
+  .telemetry-info {
+    font-size: 10px;
+  }
+}

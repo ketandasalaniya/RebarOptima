@@ -515,8 +515,42 @@
 }
 
 @media (max-width: 480px) {
+  .signup-page-wrapper {
+    padding: 10px;
+  }
+
   .signup-right {
-    padding: 20px 5px;
+    padding: 20px 8px;
+  }
+
+  .auth-theme-toggle {
+    top: 12px;
+    right: 12px;
+  }
+
+  .form-header h2 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 380px) {
+  .signup-page-wrapper {
+    padding: 6px;
+  }
+
+  .signup-right {
+    padding: 16px 4px;
+  }
+
+  .mobile-logo {
+    width: 150px;
+    margin-bottom: 20px;
+  }
+
+  .input-wrapper input,
+  .signup-select {
+    padding: 10px 10px 10px 36px;
+    font-size: 13px;
   }
 }
 

@@ -249,6 +249,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -435,8 +437,47 @@
 }
 
 @media (max-width: 480px) {
+  .signin-page-wrapper {
+    padding: 10px;
+  }
+
   .signin-right {
-    padding: 20px 5px;
+    padding: 20px 8px;
+  }
+
+  .auth-theme-toggle {
+    top: 12px;
+    right: 12px;
+  }
+
+  .form-header h2 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 380px) {
+  .signin-page-wrapper {
+    padding: 6px;
+  }
+
+  .signin-right {
+    padding: 16px 4px;
+  }
+
+  .mobile-logo {
+    width: 150px;
+    margin-bottom: 20px;
+  }
+
+  .input-wrapper input {
+    padding: 12px 12px 12px 38px;
+    font-size: 13px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 }
 

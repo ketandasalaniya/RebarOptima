@@ -88,92 +88,92 @@ export default function OverviewPage({ onNavigate }) {
       {/* Stats Cards Grid */}
       <div className="stats-cards-grid">
         <div className="card stat-card">
-          <div className="stat-card-left">
+          <div className="stat-card-header">
             <span className="card-lbl">Live Stock Weight</span>
-            <span className="card-val">
-              {(totalLiveStockKg / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="val-unit">Tons</span>
-            </span>
-            <div className="card-sub-stats">
-              <span className="sub-stat-item">
-                <span className="bullet std"></span> Standard: {(liveStandardKg / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Tons
-              </span>
-              <span className="sub-stat-item">
-                <span className="bullet rem"></span> Remnants: {(liveRemnantsKg / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Tons
-              </span>
+            <div className="card-icon-wrapper purple-bg">
+              <Package size={20} color="var(--accent)" />
             </div>
           </div>
-          <div className="card-icon-wrapper purple-bg">
-            <Package size={22} color="var(--accent)" />
+          <span className="card-val">
+            {(totalLiveStockKg / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="val-unit">Tons</span>
+          </span>
+          <div className="card-sub-stats">
+            <span className="sub-stat-item">
+              <span className="bullet std"></span> Standard: {(liveStandardKg / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Tons
+            </span>
+            <span className="sub-stat-item">
+              <span className="bullet rem"></span> Remnants: {(liveRemnantsKg / 1000).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Tons
+            </span>
           </div>
         </div>
 
         <div className="card stat-card">
-          <div className="stat-card-left">
+          <div className="stat-card-header">
             <span className="card-lbl">Scrap Generated (Till Date)</span>
-            <span className="card-val text-red">
-              {totalScrapKg.toLocaleString()} <span className="val-unit">Kgs</span>
-            </span>
-            <span className="card-sub-lbl text-red">Cumulative waste generated from cut lists</span>
+            <div className="card-icon-wrapper red-bg">
+              <Trash2 size={20} color="#ea4a4a" />
+            </div>
           </div>
-          <div className="card-icon-wrapper red-bg">
-            <Trash2 size={22} color="#ea4a4a" />
-          </div>
+          <span className="card-val text-red">
+            {totalScrapKg.toLocaleString()} <span className="val-unit">Kgs</span>
+          </span>
+          <span className="card-sub-lbl text-red">Cumulative waste generated from cut lists</span>
         </div>
 
         <div className="card stat-card">
-          <div className="stat-card-left">
+          <div className="stat-card-header">
             <span className="card-lbl">Wastage / Scrap Ratio</span>
-            <span className="card-val text-orange">
-              {wastagePercentage.toFixed(2)}<span className="val-unit">%</span>
-            </span>
-            <span className="card-sub-lbl text-orange">
-              {wastagePercentage > 0 
-                ? `Efficiency: ${(100 - wastagePercentage).toFixed(2)}% yield`
-                : 'No optimization batches run yet'}
-            </span>
+            <div className="card-icon-wrapper orange-bg">
+              <TrendingUp size={20} color="#e38c22" />
+            </div>
           </div>
-          <div className="card-icon-wrapper orange-bg">
-            <TrendingUp size={22} color="#e38c22" />
-          </div>
+          <span className="card-val text-orange">
+            {wastagePercentage.toFixed(2)}<span className="val-unit">%</span>
+          </span>
+          <span className="card-sub-lbl text-orange">
+            {wastagePercentage > 0 
+              ? `Efficiency: ${(100 - wastagePercentage).toFixed(2)}% yield`
+              : 'No optimization batches run yet'}
+          </span>
         </div>
 
         <div className="card stat-card">
-          <div className="stat-card-left">
+          <div className="stat-card-header">
             <span className="card-lbl">Total Scrap Weight Sold</span>
-            <span className="card-val text-cyan">
-              {totalScrapSoldWeight.toLocaleString()} <span className="val-unit">Kgs</span>
-            </span>
-            <span className="card-sub-lbl text-cyan">Scrap cleared & sold from site</span>
+            <div className="card-icon-wrapper cyan-bg">
+              <Scale size={20} color="#3ac0e8" />
+            </div>
           </div>
-          <div className="card-icon-wrapper cyan-bg">
-            <Scale size={22} color="#3ac0e8" />
-          </div>
+          <span className="card-val text-cyan">
+            {totalScrapSoldWeight.toLocaleString()} <span className="val-unit">Kgs</span>
+          </span>
+          <span className="card-sub-lbl text-cyan">Scrap cleared & sold from site</span>
         </div>
 
         <div className="card stat-card">
-          <div className="stat-card-left">
+          <div className="stat-card-header">
             <span className="card-lbl">Total Revenue Retrieved</span>
-            <span className="card-val text-green">
-              ₹{totalScrapRevenue.toLocaleString('en-IN')}
-            </span>
-            <span className="card-sub-lbl text-green">Capital recovered from waste sales</span>
+            <div className="card-icon-wrapper green-bg">
+              <DollarSign size={20} color="#2da44e" />
+            </div>
           </div>
-          <div className="card-icon-wrapper green-bg">
-            <DollarSign size={22} color="#2da44e" />
-          </div>
+          <span className="card-val text-green">
+            ₹{totalScrapRevenue.toLocaleString('en-IN')}
+          </span>
+          <span className="card-sub-lbl text-green">Capital recovered from waste sales</span>
         </div>
 
         <div className="card stat-card">
-          <div className="stat-card-left">
+          <div className="stat-card-header">
             <span className="card-lbl">Lost Material Capital</span>
-            <span className="card-val text-red">
-              ₹{totalScrapLossDifferential.toLocaleString('en-IN')}
-            </span>
-            <span className="card-sub-lbl text-red">Lost value (Purchased vs sold scrap)</span>
+            <div className="card-icon-wrapper red-bg">
+              <TrendingDown size={20} color="#ea4a4a" />
+            </div>
           </div>
-          <div className="card-icon-wrapper red-bg">
-            <TrendingDown size={22} color="#ea4a4a" />
-          </div>
+          <span className="card-val text-red">
+            ₹{totalScrapLossDifferential.toLocaleString('en-IN')}
+          </span>
+          <span className="card-sub-lbl text-red">Lost value (Purchased vs sold scrap)</span>
         </div>
       </div>
 

@@ -31,3 +31,15 @@
     min-height: calc(100vh - 64px);
   }
 }
+
+@media (max-width: 640px) {
+  .main-viewport {
+    padding: 14px 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .main-viewport {
+    padding: 10px 8px;
+  }
+}
